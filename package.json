@@ -1,0 +1,38 @@
+{
+  "name": "npm-typescript-boilerplate",
+  "version": "1.0.0",
+  "description": "NPM package boilerplate with tests and typescript",
+  "main": "./lib/main",
+  "scripts": {
+    "lint": "./node_modules/tslint/bin/tslint -c tslint.json 'src/**/*.ts'",
+    "test": "./node_modules/.bin/ava --timeout 30000 test",
+    "test-watch": "nodemon -w test -w lib --exec 'npm run test'",
+    "watch": "nodemon -w lib --exec 'npm run start'",
+    "gendoc": "jsdox --output docs src",
+    "build": "./node_modules/typescript/bin/tsc -d --alwaysStrict --outDir lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgustinCB/npm-boilerplate.git"
+  },
+  "keywords": [
+    "npm",
+    "typescript",
+    "boilerplate",
+    "package"
+  ],
+  "author": "AgustinCB",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/AgustinCB/npm-typescript-boilerplate/issues"
+  },
+  "homepage": "https://github.com/AgustinCB/npm-typescript-boilerplate#readme",
+  "devDependencies": {
+    "@types/node": "^7.0.5",
+    "ava": "^0.17.0",
+    "jsdox": "^0.4.10",
+    "nodemon": "^1.11.0",
+    "tslint": "^4.4.2",
+    "typescript": "^2.1.6"
+  }
+}
