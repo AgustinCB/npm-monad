@@ -75,16 +75,13 @@ test('basic evaluation with status', t => {
     if (val.constructor !== Term) throw new Error('Unexpected argument')
 
     if (val.value.constructor === Number) {
-      return MonadicStatus.tick(0).then(() =>
-        MonadicStatus.unit(val.value))
+      return MonadicStatus.unit(val.value, 0)
     }
 
     if (val.value.constructor === Div) {
       return evaluate(val.value.term1).then(a =>
         evaluate(val.value.term2).then(b => {
-          console.log(b, a)
-          return MonadicStatus.tick(b.status + 1)
-            .then(() => MonadicStatus.unit(Math.floor(a.value/b.value)))
+          return MonadicStatus.unit(Math.floor(a.value/b.value), b.status + a.status + 1)
         })
       )
     }
@@ -98,7 +95,6 @@ test('basic evaluation with status', t => {
   const divResult = evaluate(new Term(new Div(new Term(new Div(new Term(1972), new Term(2))), new Term(23))))
   t.is(divResult.constructor, MonadicStatus)
   t.is(divResult.value.value, 42)
-  console.log(divResult)
   t.deepEqual(divResult.value.status, 2)
 })
 

@@ -20,8 +20,7 @@ export declare class MonadicStatus<V, S> extends Monad<{
 }> {
     constructor(value: V, status?: S);
     then<T1>(modifier: (a: any) => MonadicStatus<T1, S>): MonadicStatus<any, S>;
-    static tick<S>(status: S): MonadicStatus<any, S>;
-    static unit<V>(value: V): MonadicStatus<V, any>;
+    static unit<V, S>(value: V, status?: S): MonadicStatus<V, S>;
 }
 export declare class MonadicOutput<V> extends Monad<{
     value: V;

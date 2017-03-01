@@ -55,12 +55,8 @@ export class MonadicStatus<V, S> extends Monad<{ value: V, status: S}> {
     return modifier(this.value)
   }
 
-  public static tick<S> (status: S): MonadicStatus<any, S> {
-    return new MonadicStatus(null, status)
-  }
-
-  public static unit<V> (value: V): MonadicStatus<V, any> {
-    return new MonadicStatus(value)
+  public static unit<V, S> (value: V, status: S = null): MonadicStatus<V, S> {
+    return new MonadicStatus(value, status)
   }
 }
 
