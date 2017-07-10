@@ -1,6 +1,6 @@
 import {Monad} from './main'
 
-export class MonadicOption<V> implements Monad<V> {
+export default class Option<V> implements Monad<V> {
   content: V
 
   constructor (content?: V) {
@@ -23,32 +23,32 @@ export class MonadicOption<V> implements Monad<V> {
     return !this.nonDefined()
   }
 
-  then<V1> (modifier: (a: V) => MonadicOption<V1>): MonadicOption<V1> {
+  then<V1> (modifier: (a: V) => Option<V1>): Option<V1> {
     if (this.nonDefined()) {
-      return new MonadicOption(null)
+      return new Option(null)
     }
     return modifier(this.content)
   }
 
-  map<V1> (modifier: (a: V) => V1): MonadicOption<V1> {
-    return this.then(a => MonadicOption.unit(modifier(a)))
+  map<V1> (modifier: (a: V) => V1): Option<V1> {
+    return this.then(a => Option.unit(modifier(a)))
   }
 
-  filter (check: (a: V) => boolean): MonadicOption<V> {
+  filter (check: (a: V) => boolean): Option<V> {
     if (this.nonDefined() || !check(this.content)) {
-      return new MonadicOption(null)
+      return new Option(null)
     }
-    return new MonadicOption(this.content)
+    return new Option(this.content)
   }
 
-  forEach (action: (a: V) => void): MonadicOption<V> {
+  forEach (action: (a: V) => void): Option<V> {
     if (this.isDefined()) {
       action(this.content)
     }
     return this
   }
 
-  public static unit<V> (value?: V): MonadicOption<V> {
-    return new MonadicOption(value)
+  public static unit<V> (value?: V): Option<V> {
+    return new Option(value)
   }
 }

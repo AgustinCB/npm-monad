@@ -1,22 +1,17 @@
 import {Monad} from './main'
 
 
-export class MonadEitherType<T, T1> implements Monad<T | T1> {
+export default class Either<T, T1> {
   content: T | T1
   isLeft: boolean
   isRight: boolean
 
-  then<V> (modifier: (a: T | T1) => MonadEitherType<T | V, T1 | V>): MonadEitherType<T | V, T1 | V> {
-    if (this.isLeft) return Left.unit(this.getLeft()).then(modifier)
-    return Right.unit(this.get()).then(modifier)
-  }
-
-  map<T2>(modifier: (a: T1) => T2): MonadEitherType<T, T2> {
+  map<T2>(modifier: (a: T1) => T2): Either<T, T2> {
     if (this.isLeft) return Left.unit(this.getLeft())
-    return this.then((a: T1) => Right.unit(modifier(a)))
+    return Right.unit(this.get()).then((a: T1) => Right.unit(modifier(a)))
   }
 
-  filterOrElse(check: (a: T1) => boolean, defaultValue: T): MonadEitherType<T, T1> {
+  filterOrElse(check: (a: T1) => boolean, defaultValue: T): Either<T, T1> {
     if (this.isLeft || !check(this.get())) return Left.unit(defaultValue)
     return Right.unit(this.get())
   }
@@ -40,7 +35,7 @@ export class MonadEitherType<T, T1> implements Monad<T | T1> {
   }
 }
 
-export class Left<V> extends MonadEitherType<V, any> {
+export class Left<V> extends Either<V, any> implements Monad<V> {
   isLeft: boolean = true
   isRight: boolean = false
 
@@ -57,7 +52,7 @@ export class Left<V> extends MonadEitherType<V, any> {
   }
 }
 
-export class Right<V> extends MonadEitherType<any, V> {
+export class Right<V> extends Either<any, V> implements Monad<V> {
   isRight: boolean = true
   isLeft: boolean = false
 
