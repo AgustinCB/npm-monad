@@ -1,33 +1,36 @@
-export default class Monad<T> {
-    value: T;
-    constructor(value: T);
-    then<T1>(modifier: (a: T) => Monad<T1>): Monad<T1>;
-    static unit<T>(value: T): Monad<T>;
-    static then<T1, T2>(initial: Monad<T1>): (modifier: (a: T1) => Monad<T2>) => Monad<T2>;
+export interface Monad<T> {
+    content: T;
+    then<T1, M extends Monad<T1>>(modifier: (a: T) => M): M;
 }
-export declare class MonadicException<V> extends Monad<{
+export default class BasicMonad<V> implements Monad<V> {
+    content: V;
+    constructor(content: V);
+    then<V1>(modifier: (a: V) => BasicMonad<V1>): BasicMonad<V1>;
+    static unit<V>(value: V): BasicMonad<V>;
+}
+export declare class MonadicException<V> implements Monad<V> {
+    content: V;
     error: String;
-    value: V;
-}> {
-    constructor(value: V, exception?: String);
-    then<T1>(modifier: (a: any) => MonadicException<T1>): MonadicException<any>;
+    constructor(content: V, error?: String);
+    then<V1>(modifier: (a: V) => MonadicException<V1>): MonadicException<V1>;
+    getOrElse(defaultValue: V): V;
     static unit<V>(value: V): MonadicException<V>;
     static raise(exception: String): MonadicException<any>;
 }
-export declare class MonadicStatus<V, S> extends Monad<{
-    value: V;
+export declare class MonadicStatus<V, S> implements Monad<V> {
+    content: V;
     status: S;
-}> {
-    constructor(value: V, status?: S);
-    then<T1>(modifier: (a: any) => MonadicStatus<T1, S>): MonadicStatus<any, S>;
+    constructor(content: V, status?: S);
+    statusOrElse(defaultStatus: S): S;
+    getOrElse(defaultValue: V): V;
+    then<V1>(modifier: (a: V, s: S) => MonadicStatus<V1, S>): MonadicStatus<V1, S>;
     static unit<V, S>(value: V, status?: S): MonadicStatus<V, S>;
 }
-export declare class MonadicOutput<V> extends Monad<{
-    value: V;
+export declare class MonadicOutput<V> implements Monad<V> {
+    content: V;
     output: Array<String>;
-}> {
-    constructor(value: V, output?: Array<String>);
-    then<T1>(modifier: (a: any) => MonadicOutput<T1>): MonadicOutput<any>;
+    constructor(content: V, output?: Array<String>);
+    then<V1>(modifier: (a: V) => MonadicOutput<V1>): MonadicOutput<V1>;
     static unit<V>(value: V): MonadicOutput<V>;
     static out(output: String): MonadicOutput<any>;
 }

@@ -1,10 +1,10 @@
 import test from 'ava'
 
-import {default as Monad, MonadicException, MonadicStatus, MonadicOutput} from '../lib/main'
+import {BasicMonad, MonadicException, MonadicStatus, MonadicOutput} from '../lib/main'
 
 class Term {
   constructor(value) {
-    this.value = value
+    this.content = value
   }
 }
 
@@ -19,35 +19,35 @@ test('basic evaluation', t => {
   const evaluate = (val) => {
     if (val.constructor !== Term) throw new Error('Unexpected argument')
 
-    if (val.value.constructor === Number) return Monad.unit(val.value)
+    if (val.content.constructor === Number) return BasicMonad.unit(val.content)
 
-    if (val.value.constructor === Div) {
-      return evaluate(val.value.term1).then(a =>
-        evaluate(val.value.term2).then(b =>
-          Monad.unit(a/b)
+    if (val.content.constructor === Div) {
+      return evaluate(val.content.term1).then(a =>
+        evaluate(val.content.term2).then(b =>
+          BasicMonad.unit(a/b)
         )
       )
     }
   }
 
   const consResult = evaluate(new Term(42))
-  t.is(consResult.constructor, Monad)
-  t.is(consResult.value, 42)
+  t.is(consResult.constructor, BasicMonad)
+  t.is(consResult.content, 42)
 
   const divResult = evaluate(new Term(new Div(new Term(new Div(new Term(1972), new Term(2))), new Term(23))))
-  t.is(consResult.constructor, Monad)
-  t.is(consResult.value, 42)
+  t.is(consResult.constructor, BasicMonad)
+  t.is(consResult.content, 42)
 })
 
 test('basic evaluation with exception', t => {
   const evaluate = (val) => {
     if (val.constructor !== Term) throw new Error('Unexpected argument')
 
-    if (val.value.constructor === Number) return MonadicException.unit(val.value)
+    if (val.content.constructor === Number) return MonadicException.unit(val.content)
 
-    if (val.value.constructor === Div) {
-      return evaluate(val.value.term1).then(a =>
-        evaluate(val.value.term2).then(b =>
+    if (val.content.constructor === Div) {
+      return evaluate(val.content.term1).then(a =>
+        evaluate(val.content.term2).then(b =>
           (b === 0)
           ? MonadicException.raise('Division by zero')
           : MonadicException.unit(Math.floor(a/b))
@@ -58,30 +58,30 @@ test('basic evaluation with exception', t => {
 
   const consResult = evaluate(new Term(42))
   t.is(consResult.constructor, MonadicException)
-  t.is(consResult.value.value, 42)
+  t.is(consResult.content, 42)
 
   const divResult = evaluate(new Term(new Div(new Term(new Div(new Term(1972), new Term(2))), new Term(23))))
   t.is(divResult.constructor, MonadicException)
-  t.is(divResult.value.value, 42)
+  t.is(divResult.content, 42)
 
   const errorResult = evaluate(new Term(new Div(new Term(10), new Term(0))))
   t.is(errorResult.constructor, MonadicException)
-  t.is(errorResult.value.value, null)
-  t.is(errorResult.value.error, 'Division by zero')
+  t.is(errorResult.content, null)
+  t.is(errorResult.error, 'Division by zero')
 })
 
 test('basic evaluation with status', t => {
   const evaluate = (val) => {
     if (val.constructor !== Term) throw new Error('Unexpected argument')
 
-    if (val.value.constructor === Number) {
-      return MonadicStatus.unit(val.value, 0)
+    if (val.content.constructor === Number) {
+      return MonadicStatus.unit(val.content, 0)
     }
 
-    if (val.value.constructor === Div) {
-      return evaluate(val.value.term1).then(a =>
-        evaluate(val.value.term2).then(b => {
-          return MonadicStatus.unit(Math.floor(a.value/b.value), b.status + a.status + 1)
+    if (val.content.constructor === Div) {
+      return evaluate(val.content.term1).then((a, s1) =>
+        evaluate(val.content.term2).then((b, s2) => {
+          return MonadicStatus.unit(Math.floor(a/b), s1 + s2 + 1)
         })
       )
     }
@@ -89,29 +89,29 @@ test('basic evaluation with status', t => {
 
   const consResult = evaluate(new Term(42))
   t.is(consResult.constructor, MonadicStatus)
-  t.is(consResult.value.value, 42)
-  t.deepEqual(consResult.value.status, 0)
+  t.is(consResult.content, 42)
+  t.deepEqual(consResult.status, 0)
 
   const divResult = evaluate(new Term(new Div(new Term(new Div(new Term(1972), new Term(2))), new Term(23))))
   t.is(divResult.constructor, MonadicStatus)
-  t.is(divResult.value.value, 42)
-  t.deepEqual(divResult.value.status, 2)
+  t.is(divResult.content, 42)
+  t.deepEqual(divResult.status, 2)
 })
 
 test('basic evaluation with output', t => {
   const evaluate = (val) => {
     if (val.constructor !== Term) throw new Error('Unexpected argument')
 
-    if (val.value.constructor === Number) {
-      return MonadicOutput.out(`Cons ${val.value}`).then(() =>
-        MonadicOutput.unit(val.value))
+    if (val.content.constructor === Number) {
+      return MonadicOutput.out(`Cons ${val.content}`).then(() =>
+        MonadicOutput.unit(val.content))
     }
 
-    if (val.value.constructor === Div) {
-      return evaluate(val.value.term1).then(a =>
-        evaluate(val.value.term2).then(b =>
-          MonadicOutput.out(`${a.value} / ${b.value} = ${a.value/b.value}`)
-            .then(() => MonadicOutput.unit(Math.floor(a.value/b.value)))
+    if (val.content.constructor === Div) {
+      return evaluate(val.content.term1).then(a =>
+        evaluate(val.content.term2).then(b =>
+          MonadicOutput.out(`${a} / ${b} = ${Math.floor(a/b)}`)
+            .then(() => MonadicOutput.unit(Math.floor(a/b)))
         )
       )
     }
@@ -119,17 +119,17 @@ test('basic evaluation with output', t => {
 
   const consResult = evaluate(new Term(42))
   t.is(consResult.constructor, MonadicOutput)
-  t.is(consResult.value.value, 42)
-  t.deepEqual(consResult.value.output, [ 'Cons 42' ])
+  t.is(consResult.content, 42)
+  t.deepEqual(consResult.output, [ 'Cons 42' ])
 
   const divResult = evaluate(new Term(new Div(new Term(new Div(new Term(1972), new Term(2))), new Term(23))))
   t.is(divResult.constructor, MonadicOutput)
-  t.is(divResult.value.value, 42)
-  t.deepEqual(divResult.value.output, [ 
+  t.is(divResult.content, 42)
+  t.deepEqual(divResult.output, [ 
     'Cons 1972',
     'Cons 2',
     '1972 / 2 = 986',
     'Cons 23',
-    '986 / 23 = 42.869565217391305'
+    '986 / 23 = 42'
   ])
 })

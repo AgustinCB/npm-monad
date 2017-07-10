@@ -1,39 +1,37 @@
 // Identity Monad
 
-export default class Monad<T> {
-  value: T
+export interface Monad<T> {
+  content: T
 
-  constructor (value: T) {
-    this.value = value
+  then<T1, M extends Monad<T1>> (modifier: (a: T) => M): M
+}
+
+export default class BasicMonad<V> implements Monad<V> {
+  constructor(public content: V) {
   }
 
-  then<T1> (modifier: (a: T) => Monad<T1>): Monad<T1> {
-    return modifier(this.value)
+  then<V1> (modifier: (a: V) => BasicMonad<V1>): BasicMonad<V1> {
+    return modifier(this.content)
   }
 
-  public static unit<T> (value: T): Monad<T> {
-    return new Monad(value)
-  }
-
-  public static then<T1, T2> (initial: Monad<T1>): (modifier: (a: T1) => Monad<T2>) => Monad<T2> {
-    return initial.then
+  public static unit<V>(value: V): BasicMonad<V> {
+    return new BasicMonad(value)
   }
 }
 
-export class MonadicException<V> extends Monad<{ error: String, value: V }> {
-  constructor (value: V, exception: String = null) {
-    super({
-      error: exception,
-      value: value
-    })
+export class MonadicException<V> implements Monad<V> {
+  constructor (public content: V, public error: String = null) {
   }
 
-  // This should actually be then<T1> (modifier: (a: V) => Monad<T1>): Monad<any>
-  then<T1> (modifier: (a: any) => MonadicException<T1>): MonadicException<any> {
-    if (this.value.error) {
-      return new MonadicException(null, this.value.error)
+  then<V1> (modifier: (a: V) => MonadicException<V1>): MonadicException<V1> {
+    if (this.error) {
+      return new MonadicException(null, this.error)
     }
-    return modifier(this.value.value)
+    return modifier(this.content)
+  }
+
+  getOrElse(defaultValue: V): V {
+    return this.content || defaultValue
   }
 
   public static unit<V> (value: V): MonadicException<V> {
@@ -45,14 +43,20 @@ export class MonadicException<V> extends Monad<{ error: String, value: V }> {
   }
 }
 
-export class MonadicStatus<V, S> extends Monad<{ value: V, status: S}> {
-  constructor (value: V, status: S = null) {
-    super({ status, value })
+export class MonadicStatus<V, S> implements Monad<V> {
+  constructor (public content: V, public status: S = null) {
   }
 
-  // This should actually be then<T1> (modifier: (a: V) => Monad<T1>): Monad<any>
-  then<T1> (modifier: (a: any) => MonadicStatus<T1, S>): MonadicStatus<any, S> {
-    return modifier(this.value)
+  statusOrElse(defaultStatus: S): S {
+    return this.status || defaultStatus
+  }
+
+  getOrElse(defaultValue: V): V {
+    return this.content || defaultValue
+  }
+
+  then<V1> (modifier: (a: V, s: S) => MonadicStatus<V1, S>): MonadicStatus<V1, S> {
+    return modifier(this.content, this.status)
   }
 
   public static unit<V, S> (value: V, status: S = null): MonadicStatus<V, S> {
@@ -60,15 +64,13 @@ export class MonadicStatus<V, S> extends Monad<{ value: V, status: S}> {
   }
 }
 
-export class MonadicOutput<V> extends Monad<{ value: V, output: Array<String> }> {
-  constructor (value: V, output: Array<String> = []) {
-    super({ output, value })
+export class MonadicOutput<V> implements Monad<V> {
+  constructor (public content: V, public output: Array<String> = []) {
   }
 
-  // This should actually be then<T1> (modifier: (a: V) => Monad<T1>): Monad<any>
-  then<T1> (modifier: (a: any) => MonadicOutput<T1>): MonadicOutput<any> {
-    const temp = modifier(this.value)
-    return new MonadicOutput(temp.value.value, this.value.output.concat(temp.value.output))
+  then<V1> (modifier: (a: V) => MonadicOutput<V1>): MonadicOutput<V1> {
+    const temp = modifier(this.content)
+    return new MonadicOutput(temp.content, this.output.concat(temp.output))
   }
 
   public static unit<V> (value: V): MonadicOutput<V> {

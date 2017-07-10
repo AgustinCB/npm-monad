@@ -9,7 +9,7 @@
     "test-watch": "nodemon -w test -w lib --exec 'npm run test'",
     "watch": "nodemon -w lib --exec 'npm run start'",
     "gendoc": "jsdox --output docs src",
-    "build": "./node_modules/typescript/bin/tsc -d --alwaysStrict --outDir lib"
+    "build": "./node_modules/.bin/tsc --outDir lib"
   },
   "repository": {
     "type": "git",
