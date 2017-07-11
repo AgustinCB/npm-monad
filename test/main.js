@@ -1,6 +1,6 @@
 import test from 'ava'
 
-import {BasicMonad, MonadicException, MonadicStatus, MonadicOutput} from '../lib/main'
+import {default as BasicMonad, MonadicException, MonadicStatus, MonadicOutput} from '../lib/main'
 
 class Term {
   constructor(value) {
