@@ -20,7 +20,7 @@ export default class Option<V> implements Monad<V> {
   }
 
   nonDefined(): boolean {
-    return !this.nonDefined()
+    return !this.isDefined()
   }
 
   then<V1> (modifier: (a: V) => Option<V1>): Option<V1> {
@@ -41,7 +41,7 @@ export default class Option<V> implements Monad<V> {
     return new Option(this.content)
   }
 
-  forEach (action: (a: V) => void): Option<V> {
+  foreach (action: (a: V) => void): Option<V> {
     if (this.isDefined()) {
       action(this.content)
     }
@@ -50,5 +50,9 @@ export default class Option<V> implements Monad<V> {
 
   public static unit<V> (value?: V): Option<V> {
     return new Option(value)
+  }
+
+  public static none(): Option<any> {
+    return new Option(null)
   }
 }

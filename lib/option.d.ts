@@ -9,6 +9,7 @@ export default class Option<V> implements Monad<V> {
     then<V1>(modifier: (a: V) => Option<V1>): Option<V1>;
     map<V1>(modifier: (a: V) => V1): Option<V1>;
     filter(check: (a: V) => boolean): Option<V>;
-    forEach(action: (a: V) => void): Option<V>;
+    foreach(action: (a: V) => void): Option<V>;
     static unit<V>(value?: V): Option<V>;
+    static none(): Option<any>;
 }
