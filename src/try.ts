@@ -53,6 +53,10 @@ export class MonadicException<V> implements Monad<V> {
     return MonadicException.unit(this.content)
   }
 
+  get(): V {
+    return this.content
+  }
+
   getOrElse(defaultValue: V): V {
     return this.content || defaultValue
   }
