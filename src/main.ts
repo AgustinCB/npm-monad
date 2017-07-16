@@ -19,30 +19,6 @@ export default class BasicMonad<V> implements Monad<V> {
   }
 }
 
-export class MonadicException<V> implements Monad<V> {
-  constructor (public content: V, public error: String = null) {
-  }
-
-  then<V1> (modifier: (a: V) => MonadicException<V1>): MonadicException<V1> {
-    if (this.error) {
-      return new MonadicException(null, this.error)
-    }
-    return modifier(this.content)
-  }
-
-  getOrElse(defaultValue: V): V {
-    return this.content || defaultValue
-  }
-
-  public static unit<V> (value: V): MonadicException<V> {
-    return new MonadicException(value)
-  }
-
-  public static raise (exception: String): MonadicException<any> {
-    return new MonadicException(null, exception)
-  }
-}
-
 export class MonadicStatus<V, S> implements Monad<V> {
   constructor (public content: V, public status: S = null) {
   }

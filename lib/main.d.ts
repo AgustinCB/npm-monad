@@ -8,15 +8,6 @@ export default class BasicMonad<V> implements Monad<V> {
     then<V1>(modifier: (a: V) => BasicMonad<V1>): BasicMonad<V1>;
     static unit<V>(value: V): BasicMonad<V>;
 }
-export declare class MonadicException<V> implements Monad<V> {
-    content: V;
-    error: String;
-    constructor(content: V, error?: String);
-    then<V1>(modifier: (a: V) => MonadicException<V1>): MonadicException<V1>;
-    getOrElse(defaultValue: V): V;
-    static unit<V>(value: V): MonadicException<V>;
-    static raise(exception: String): MonadicException<any>;
-}
 export declare class MonadicStatus<V, S> implements Monad<V> {
     content: V;
     status: S;

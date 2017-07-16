@@ -1,6 +1,7 @@
 import test from 'ava'
 
-import {default as BasicMonad, MonadicException, MonadicStatus, MonadicOutput} from '../lib/main'
+import {default as BasicMonad, MonadicStatus, MonadicOutput} from '../lib/main'
+import Try from '../lib/try'
 
 class Term {
   constructor(value) {
@@ -43,30 +44,31 @@ test('basic evaluation with exception', t => {
   const evaluate = (val) => {
     if (val.constructor !== Term) throw new Error('Unexpected argument')
 
-    if (val.content.constructor === Number) return MonadicException.unit(val.content)
+    if (val.content.constructor === Number) return Try.unit(val.content)
 
     if (val.content.constructor === Div) {
       return evaluate(val.content.term1).then(a =>
         evaluate(val.content.term2).then(b =>
           (b === 0)
-          ? MonadicException.raise('Division by zero')
-          : MonadicException.unit(Math.floor(a/b))
+          ? Try.raise('Division by zero')
+          : Try.unit(Math.floor(a/b))
         )
       )
     }
   }
 
   const consResult = evaluate(new Term(42))
-  t.is(consResult.constructor, MonadicException)
-  t.is(consResult.content, 42)
+  t.is(consResult.constructor, Try)
+  t.is(consResult.getOrElse(':('), 42)
 
   const divResult = evaluate(new Term(new Div(new Term(new Div(new Term(1972), new Term(2))), new Term(23))))
-  t.is(divResult.constructor, MonadicException)
-  t.is(divResult.content, 42)
+  t.is(divResult.constructor, Try)
+  console.log(divResult)
+  t.is(divResult.getOrElse(':('), 42)
 
   const errorResult = evaluate(new Term(new Div(new Term(10), new Term(0))))
-  t.is(errorResult.constructor, MonadicException)
-  t.is(errorResult.content, null)
+  t.is(errorResult.constructor, Try)
+  t.is(errorResult.getOrElse(':('), null)
   t.is(errorResult.error, 'Division by zero')
 })
 

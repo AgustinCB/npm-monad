@@ -4,7 +4,7 @@ interface ContentProvider<V> {
   func: () => V
 }
 
-export class MonadicException<V> implements Monad<V> {
+export default class Try<V> implements Monad<V> {
   /*
   content: V
   error: String
@@ -35,22 +35,22 @@ export class MonadicException<V> implements Monad<V> {
     return !this.isFailure()
   }
 
-  then<V1> (modifier: (a: V) => MonadicException<V1>): MonadicException<V1> {
+  then<V1> (modifier: (a: V) => Try<V1>): Try<V1> {
     if (this.isFailure()) {
-      return new MonadicException(null, this.error)
+      return new Try(null, this.error)
     }
     return modifier(this.content)
   }
 
-  map<V1> (modifier: (a: V) => V1): MonadicException<V1> {
-    return this.then(a => MonadicException.unit(modifier(a)))
+  map<V1> (modifier: (a: V) => V1): Try<V1> {
+    return this.then(a => Try.unit(modifier(a)))
   }
 
-  filterOrRaise (check: (a: V) => boolean, error: String): MonadicException<V> {
+  filterOrRaise (check: (a: V) => boolean, error: String): Try<V> {
     if (this.isFailure() || !check(this.content)) {
-      return MonadicException.raise(this.error || error)
+      return Try.raise(this.error || error)
     }
-    return MonadicException.unit(this.content)
+    return Try.unit(this.content)
   }
 
   get(): V {
@@ -61,11 +61,11 @@ export class MonadicException<V> implements Monad<V> {
     return this.content || defaultValue
   }
 
-  recover (recoverException: (e: String) => V): MonadicException<V> {
+  recover (recoverException: (e: String) => V): Try<V> {
     if (this.isFailure()) {
-      return MonadicException.unit(recoverException(this.error))
+      return Try.unit(recoverException(this.error))
     }
-    return MonadicException.unit(this.content)
+    return Try.unit(this.content)
   }
 
   handle (handleException: (e: String) => void) {
@@ -74,11 +74,11 @@ export class MonadicException<V> implements Monad<V> {
     }
   }
 
-  public static unit<V> (value: V): MonadicException<V> {
-    return new MonadicException(value)
+  public static unit<V> (value: V): Try<V> {
+    return new Try(value)
   }
 
-  public static raise (exception: String): MonadicException<any> {
-    return new MonadicException(null, exception)
+  public static raise (exception: String): Try<any> {
+    return new Try(null, exception)
   }
 }
