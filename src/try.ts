@@ -28,15 +28,16 @@ export default class Try<V> implements Monad<V> {
   }
   
   isFailure(): boolean {
-    return this.error === undefined || this.error === null
+    return !this.isSuccess()
   }
 
   isSuccess(): boolean {
-    return !this.isFailure()
+    return this.error === undefined || this.error === null
   }
 
   then<V1> (modifier: (a: V) => Try<V1>): Try<V1> {
     if (this.isFailure()) {
+      console.log("FAILURE", this.content, this.error)
       return new Try(null, this.error)
     }
     return modifier(this.content)

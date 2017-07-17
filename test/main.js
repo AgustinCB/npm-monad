@@ -63,12 +63,11 @@ test('basic evaluation with exception', t => {
 
   const divResult = evaluate(new Term(new Div(new Term(new Div(new Term(1972), new Term(2))), new Term(23))))
   t.is(divResult.constructor, Try)
-  console.log(divResult)
   t.is(divResult.getOrElse(':('), 42)
 
   const errorResult = evaluate(new Term(new Div(new Term(10), new Term(0))))
   t.is(errorResult.constructor, Try)
-  t.is(errorResult.getOrElse(':('), null)
+  t.is(errorResult.getOrElse(':('), ':(')
   t.is(errorResult.error, 'Division by zero')
 })
 
