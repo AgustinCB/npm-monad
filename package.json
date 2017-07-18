@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "NPM package boilerplate with tests and typescript",
   "main": "./lib/main",
+  "typings": "./lib/main",
   "scripts": {
     "lint": "./node_modules/tslint/bin/tslint -c tslint.json 'src/**/*.ts'",
     "test": "./node_modules/.bin/ava --timeout 30000 test",
