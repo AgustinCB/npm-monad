@@ -1,5 +1,5 @@
 {
-  "name": "npm-typescript-boilerplate",
+  "name": "npm-monads",
   "version": "1.0.0",
   "description": "NPM package boilerplate with tests and typescript",
   "main": "./lib/main",
