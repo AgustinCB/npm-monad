@@ -25,3 +25,6 @@ export declare class MonadicOutput<V> implements Monad<V> {
     static unit<V>(value: V): MonadicOutput<V>;
     static out(output: String): MonadicOutput<any>;
 }
+export { default as Option } from './option';
+export { default as Either } from './either';
+export { default as Try } from './try';
