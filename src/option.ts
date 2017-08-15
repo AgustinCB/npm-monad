@@ -1,6 +1,6 @@
-import {Monad} from './main'
+import {Monad, Functor} from './main'
 
-export default class Option<V> implements Monad<V> {
+export default class Option<V> implements Monad<V>, Functor<V> {
   content: V
 
   constructor (content?: V) {

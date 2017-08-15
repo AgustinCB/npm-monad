@@ -6,6 +6,11 @@ export interface Monad<T> {
   then<T1, M extends Monad<T1>> (modifier: (a: T) => M): M
 }
 
+export interface Functor<T> {
+  content: T
+  map<T1, F extends Functor<T1>> (modifier: (a: T) => T1): F
+}
+
 export default class BasicMonad<V> implements Monad<V> {
   constructor(public content: V) {
   }
