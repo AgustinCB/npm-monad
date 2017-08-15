@@ -16,7 +16,7 @@ export default class Option<V> implements Monad<V>, Functor<V> {
   }
 
   isDefined(): boolean {
-    return !!this.content
+    return this.content !== null && this.content !== undefined
   }
 
   nonDefined(): boolean {
