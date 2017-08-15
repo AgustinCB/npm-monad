@@ -25,7 +25,7 @@ export default class Option<V> implements Monad<V>, Functor<V> {
 
   then<V1> (modifier: (a: V) => Option<V1>): Option<V1> {
     if (this.nonDefined()) {
-      return new Option(null)
+      return Option.none()
     }
     return modifier(this.content)
   }
