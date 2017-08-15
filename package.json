@@ -1,6 +1,6 @@
 {
   "name": "npm-monads",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "NPM package boilerplate with tests and typescript",
   "main": "./lib/main",
   "typings": "./lib/main",

@@ -48,6 +48,13 @@ export default class Option<V> implements Monad<V>, Functor<V> {
     return this
   }
 
+  orElseDo (action: () => void): Option<V> {
+    if (this.nonDefined()) {
+      action()
+    }
+    return this
+  }
+
   public static unit<V> (value?: V): Option<V> {
     return new Option(value)
   }

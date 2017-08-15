@@ -10,6 +10,7 @@ export default class Option<V> implements Monad<V>, Functor<V> {
     map<V1>(modifier: (a: V) => V1): Option<V1>;
     filter(check: (a: V) => boolean): Option<V>;
     foreach(action: (a: V) => void): Option<V>;
+    orElseDo(action: () => void): Option<V>;
     static unit<V>(value?: V): Option<V>;
     static none(): Option<any>;
 }
