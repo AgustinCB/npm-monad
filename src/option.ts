@@ -36,7 +36,7 @@ export default class Option<V> implements Monad<V>, Functor<V> {
 
   filter (check: (a: V) => boolean): Option<V> {
     if (this.nonDefined() || !check(this.content)) {
-      return new Option(null)
+      return Option.none()
     }
     return new Option(this.content)
   }
