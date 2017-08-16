@@ -12,7 +12,7 @@ export default class Option<V> implements Monad<V>, Functor<V> {
   }
 
   getOrElse(defaultValue: V): V {
-    return this.content || defaultValue
+    return this.isDefined() ? this.content : defaultValue
   }
 
   isDefined(): boolean {
