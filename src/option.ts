@@ -31,7 +31,10 @@ export default class Option<V> implements Monad<V>, Functor<V> {
   }
 
   map<V1> (modifier: (a: V) => V1): Option<V1> {
-    return this.then(a => Option.unit(modifier(a)))
+    if (this.nonDefined()) {
+      return Option.none()
+    }
+    return Option.unit(modifier(this.content))
   }
 
   filter (check: (a: V) => boolean): Option<V> {
