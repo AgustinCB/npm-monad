@@ -8,7 +8,7 @@ export default class Either<T, T1> {
 
   map<T2>(modifier: (a: T1) => T2): Either<T, T2> {
     if (this.isLeft) return Left.unit(this.getLeft())
-    return Right.unit(this.get()).then((a: T1) => Right.unit(modifier(a)))
+    return Right.unit(modifier(this.get()))
   }
 
   filterOrElse(check: (a: T1) => boolean, defaultValue: T): Either<T, T1> {

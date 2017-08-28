@@ -12,5 +12,6 @@ export default class Option<V> implements Monad<V>, Functor<V> {
     foreach(action: (a: V) => void): Option<V>;
     orElseDo(action: () => void): Option<V>;
     static unit<V>(value?: V): Option<V>;
+    static some: typeof Option.unit;
     static none(): Option<any>;
 }

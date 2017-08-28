@@ -62,6 +62,8 @@ export default class Option<V> implements Monad<V>, Functor<V> {
     return new Option(value)
   }
 
+  public static some = Option.unit
+
   public static none(): Option<any> {
     return new Option(null)
   }
