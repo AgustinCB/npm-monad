@@ -25,7 +25,7 @@ export declare class MonadicOutput<V> implements Monad<V> {
     content: V;
     output: Array<String>;
     constructor(content: V, output?: Array<String>);
-    then<V1>(modifier: (a: V) => MonadicOutput<V1>): MonadicOutput<V1>;
+    then<V1, M extends Monad<V1>>(modifier: (a: V) => M): M;
     static unit<V>(value: V): MonadicOutput<V>;
     static out(output: String): MonadicOutput<any>;
 }

@@ -5,25 +5,6 @@ interface ContentProvider<V> {
 }
 
 export default class Try<V> implements Monad<V> {
-  /*
-  content: V
-  error: String
-
-  constructor (content: V | ContentProvider<V>, error: String = null) {
-    if (content.constructor === Function) {
-      try {
-        this.content = content()
-      } catch (e) {
-        this.content = null
-        this.error = e.toString()
-      }
-    } else {
-      this.content = content
-    }
-
-    this.error = error
-  }
-  */
   constructor (public content: V, public error: String = null) {
   }
   
@@ -37,7 +18,6 @@ export default class Try<V> implements Monad<V> {
 
   then<V1> (modifier: (a: V) => Try<V1>): Try<V1> {
     if (this.isFailure()) {
-      console.log("FAILURE", this.content, this.error)
       return new Try(null, this.error)
     }
     return modifier(this.content)

@@ -2,7 +2,6 @@
 
 export interface Monad<T> {
   content: T
-
   then<T1, M extends Monad<T1>> (modifier: (a: T) => M): M
 }
 
@@ -49,9 +48,8 @@ export class MonadicOutput<V> implements Monad<V> {
   constructor (public content: V, public output: Array<String> = []) {
   }
 
-  then<V1> (modifier: (a: V) => MonadicOutput<V1>): MonadicOutput<V1> {
-    const temp = modifier(this.content)
-    return new MonadicOutput(temp.content, this.output.concat(temp.output))
+  then<V1, M extends Monad<V1>> (modifier: (a: V) => M): M {
+    return modifier(this.content)
   }
 
   public static unit<V> (value: V): MonadicOutput<V> {

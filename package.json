@@ -34,6 +34,6 @@
     "jsdox": "^0.4.10",
     "nodemon": "^1.11.0",
     "tslint": "^4.4.2",
-    "typescript": "2.3.4"
+    "typescript": "~3.2"
   }
 }
